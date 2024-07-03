@@ -1,7 +1,8 @@
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import auth from "../../firebase/firebase.config";
 import { useState } from "react";
 import { FaRegEye,FaRegEyeSlash } from "react-icons/fa";
+import { Link } from "react-router-dom";
  
 
 const Register = () => {
@@ -41,13 +42,26 @@ const Register = () => {
         .then(result =>{
             console.log(result.user);
             setRegisterSuccess('user created successfully');
+
+            sendEmailVerification(result.user)
+            .then(()=>{
+               alert('please check your email and verify your account');
+            })
+            .catch(error=>{
+            console.error(error);
+            });
+        
+  
         })
         .catch(error=>{
             console.log(error);
             setRegisterError(error.message);
         })
+
     }
 
+    
+  
     return (
         <div>
              <div className="mx-auto md:w-1/2">
@@ -59,7 +73,7 @@ const Register = () => {
                  <div className="relative mb-4">
                  <input className=" py-2 px-4 w-full rounded-lg" type={showPassword? "text":"password"}
                   name="password"placeholder="Your password" required />
-                  <span className="absolute top-3 right-2" onClick={()=>setShowPassword(!showPassword)}> {showPassword ? <FaRegEyeSlash></FaRegEyeSlash>:<FaRegEye></FaRegEye>}</span>
+                  <span className="absolute top-3 right-2" onClick={()=>setShowPassword(!showPassword)}> {showPassword ? <FaRegEye></FaRegEye>: <FaRegEyeSlash></FaRegEyeSlash>}</span>
                  </div>
 
                  <div className="mb-2">
@@ -76,6 +90,8 @@ const Register = () => {
                 {
                     registerSuccess && <p className="text-green-700">{registerSuccess}</p>
                 }
+
+                <p>Already have an accout? <Link to='/login'>login</Link></p>
              </div>
         </div>
     );
